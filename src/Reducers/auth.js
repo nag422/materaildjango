@@ -27,6 +27,7 @@ const initialState = {
     isAuthenticated: null,
     user: null,
     isAction: 'success',
+    loginaction:false,
     profile: {},
 };
 
@@ -35,8 +36,18 @@ export default function(state = initialState, action) {
 
     switch (type) {
 
-        case LOGIN_SUCCESS:
+        
         case GOOGLE_AUTH_SUCCESS:
+            localStorage.setItem('access', payload.access);
+            localStorage.setItem('refresh', payload.refresh); 
+             
+            return {
+                ...state,
+                isAuthenticated: true,
+                access: payload.access,
+                refresh: payload.refresh
+            }
+        case LOGIN_SUCCESS:
         case FACEBOOK_AUTH_SUCCESS:
             localStorage.setItem('access', payload.access);
             localStorage.setItem('refresh', payload.refresh);   
@@ -80,7 +91,8 @@ export default function(state = initialState, action) {
                 access: null,
                 refresh: null,
                 isAuthenticated: false,
-                user: null
+                user: null,
+                loginaction:true
             }
         case AUTHENTICATED_SUCCESS:
             return {

@@ -57,8 +57,7 @@ const ProfileIndex = () => {
       
       // setProfilename(res.data.response.first_name)
       
-      localStorage.setItem('remain',res.data.remain)
-      localStorage.setItem('expiryon',res.data.totaldays)
+      
      (res.data.response.map((val) => {
         setUser({
           ...user,
@@ -82,10 +81,14 @@ const ProfileIndex = () => {
         
       }
      
+     
       
         
         
         ))
+
+        localStorage.setItem('remain',res.data.remain)
+        localStorage.setItem('expiryon',res.data.totaldays)
 
 
       

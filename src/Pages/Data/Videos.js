@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react'
 import useVideoSearch from './useVideoSearch'
-import { CircularProgress, Button, Grid, Avatar, Box, Chip, Link, TextField, MenuItem } from '@material-ui/core';
+import { CircularProgress, Button, Grid, Avatar, Box, Chip, Link, TextField, MenuItem, InputLabel } from '@material-ui/core';
 import Moment from 'react-moment';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
     // maxWidth:'370px',
     // maxWidth: '340px',
     // boxSizing:'border-box',
+    borderRadius:'0px',
     marginTop: '1%',
     '& .MuiCardContent-root': {
       padding: '22px',
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
       maxHeight: '250px',
     },
     '& .MuiTypography-h6': {
-      margin: '11px auto',
+      margin: '0px auto',
       paddingTop: '2%',
       maxHeight: '95px',
       minHeight: '95px',
@@ -56,11 +57,13 @@ const useStyles = makeStyles(theme => ({
     },
   },
   small: {
-    width: theme.spacing(2),
-    height: theme.spacing(2),
+    width:'10px',
+    height:'10px',
+    top:'5.5px'
   },
   content: {
-    padding: '10px auto auto atuo'
+    // margin: '5px auto auto atuo',
+    cursor:'pointer'
   },
   card: {
     position: 'relative',
@@ -82,6 +85,62 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       opacity: 0.5
     }
+  },
+  tagcontent:{
+    position: 'relative',
+    marginTop: 'auto',
+    paddingTop: '5%',
+    display: 'flex',
+    maxHeight: '56px',
+    minHeight: '56px',
+    overflow: 'hidden',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+    
+  },
+  tagtext:{
+    marginTop: '5px',
+    fontSize: '8px',
+    position: 'relative',      
+    color: '#5c5a5a',
+    display: 'flex',
+    flexDirection: 'row',
+    cursor: 'pointer'
+  },
+  tagcategorytesting:{
+    alignItems:"center",
+    backgroundColor: '#f9f9f9',
+      padding: '5px',
+      color: '#030303',
+      height: '24px',
+      minWidth: '12px',
+      fontSize: '11px',
+      // padding: 'auto 0px',
+      borderRadius: '16px',
+      boxSizing: 'border-box',
+      outline: 'none',
+      overflow: 'hidden',
+      
+      /* user-select: none; */
+      textAlign: 'center',
+      verticalAlign: 'baseline',
+      /* margin-bottom: -11.5rem; */
+      marginTop: '-0.5rem',
+      marginRight: '3px',
+      cursor: 'pointer'
+  },
+  searchformcustom:{
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"space-between",
+    
+    '& .MuiSelect-select':{
+      minWidth:'150px'
+    },
+    [theme.breakpoints.down('sm')]: {
+      justifyContent:"flex-start",
+      margin:'5px 3px'
+    }
   }
 
 }));
@@ -94,6 +153,14 @@ const Videos = () => {
   const [videourl, setVideourl] = useState(false)
   const [isOpen, setIsOpen] = useState(false);
   const [orderby, setOrderby] = useState('newest')
+  const [errormsg, setErrormsg] = useState('')
+  React.useEffect(() => {
+    if (!localStorage.getItem('remain')) {
+      setErrormsg('Your Plan is Expired! Upgrade Now')      
+      
+    }
+  
+  }, [])
   
 
   const {
@@ -163,7 +230,7 @@ const Videos = () => {
   return (
     <>
 
-<Grid container style={{ backgroundColor: "#fff", padding: '2% 1% 0 4%' }}
+<Grid container style={{ backgroundColor: "#fff", padding: '0.6% 0 0 2%', minHeight:'100px' }}
         alignContent="center"
         alignItems="center"
         justify="flex-start"
@@ -173,49 +240,51 @@ const Videos = () => {
 
 
         <Grid item xs={12} md={3} sm={5}>
+          
+          <Box className={classes.searchformcustom}>
+          <label>Query : </label>
           <TextField id="outlined-basic"
             label="keyword"
             variant="outlined"
-            size="small"
-            helperText="Enter Query"
+            size="small"            
             onChange={(e) => setQuery(e.target.value)}
           />
+          </Box>
         </Grid>
 
-        <Grid item xs={12} md={5} sm={5} className={classes.formalign}>
+        <Grid item xs={12} md={5} sm={12} className={classes.formalign}>
+        <Box className={classes.searchformcustom}>
+          <InputLabel >Order : </InputLabel>
           <TextField
             id="outlined-select-currency"
             select
             label="Select"
             size="small"
-            onChange={(e) => setOrderby(e.target.value)}
-            helperText="select order"
+            onChange={(e) => setOrderby(e.target.value)}            
             variant="outlined"
           >
 
             <MenuItem key='newest' value='newest'>
-              Newest
+              New
             </MenuItem>
             <MenuItem key='oldest' value='oldest'>
               Oldest
             </MenuItem>
 
           </TextField>
+          
           <Button onClick={handleSearch} className={classes.buttonalign} variant="contained" color="primary">Submit</Button>
+          </Box>
         </Grid>
 
-
-
-
-
-      </Grid>
-
+        </Grid>
+        <Grid container spacing={2}>
       {videos.map((item, index) => {
         if (videos.length === index + 1) {
           // return <div ref={lastBookElementRef} key={index}>{article.title}</div>
           return <Grid item xs={12} md={3} sm={3} key={index} ref={lastBookElementRef}>
 
-            <Card elevation={0} className={classes.cardsource}>
+<Card elevation={0} className={classes.cardsource}>
               <CardActionArea>
                 
                   <CardMedia
@@ -238,16 +307,15 @@ const Videos = () => {
 
                   <Box>
                     <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
-                      <Avatar className={classes.small} alt={item.title} src={item.image} />
-
+                    <Avatar className={classes.small} alt={item.title} src={item.image} />
 
                     </Link>
                   </Box>
                   <Box pl={1}>
                     <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
-                      <Typography gutterBottom variant="body2" color="textSecondary" component="p">
+                      <Typography gutterBottom variant="body3" color="textSecondary" component="p">
 
-                        {item.channel_title.slice(0,20)}
+                      {item.channel_title.slice(0,20)}
                       </Typography>
                     </Link>
                   </Box>
@@ -263,23 +331,30 @@ const Videos = () => {
                   </Link>
                 </Box>
 
-                <Box display="flex" mb={2} mt={2} flexDirection="row" alignItems="flex-start">
-                  <LocalOfferIcon fontSize="small" style={{ color: "gray", marginTop: "5px" }} />
+                <Box className={classes.tagcontent}>
+                  <Box className={classes.tagtext}>
+                  <LocalOfferIcon style={{ color: "lightgray",fontSize:'1rem' }} />
                   {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
 
 
                   {item.keytags.map((val, index) => (
-                    <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
+                    <div key={index}  className={classes.tagcategorytesting} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }}>{val}</div>
 
                   ))}
 
-                </Box>
-                <Box display="flex" justifyContent="flex-start" alignItems="center">
-                  <AccessTimeIcon fontSize='small' />
-                    &nbsp;<Moment filter={toUpperCaseFilter} fromNow>{item.time_elapsed}</Moment>&nbsp;
-                    <VisibilityOutlinedIcon fontSize='small'/>&nbsp;{item.views}
                   </Box>
+                </Box>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                  <Box display="flex" justifyContent="center" alignItems="center">
+
                   
+                  <AccessTimeIcon style={{fontSize:'14px'}} />
+                    &nbsp;<Moment filter={toUpperCaseFilter} fromNow>{item.time_elapsed}</Moment>&nbsp;
+                    </Box>
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{marginTop:'4px'}}>
+                    <VisibilityOutlinedIcon style={{fontSize:'14px'}} />&nbsp;{item.views}
+                    </Box>
+                  </Box>
               </CardContent>
 
             </Card>
@@ -318,7 +393,7 @@ const Videos = () => {
                   </Box>
                   <Box pl={1}>
                     <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
-                      <Typography gutterBottom variant="body2" color="textSecondary" component="p">
+                      <Typography gutterBottom variant="body3" color="textSecondary" component="p">
 
                       {item.channel_title.slice(0,20)}
                       </Typography>
@@ -336,21 +411,29 @@ const Videos = () => {
                   </Link>
                 </Box>
 
-                <Box display="flex" mb={2} mt={2} flexDirection="row" alignItems="flex-start">
-                  <LocalOfferIcon fontSize="small" style={{ color: "gray", marginTop: "5px" }} />
+                <Box className={classes.tagcontent}>
+                  <Box className={classes.tagtext}>
+                  <LocalOfferIcon style={{ color: "lightgray",fontSize:'1rem' }} />
                   {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
 
 
                   {item.keytags.map((val, index) => (
-                    <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
+                    <div key={index}  className={classes.tagcategorytesting} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }}>{val}</div>
 
                   ))}
 
+                  </Box>
                 </Box>
-                <Box display="flex" justifyContent="flex-start" alignItems="center">
-                  <AccessTimeIcon fontSize='small' />
+                <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                  <Box display="flex" justifyContent="center" alignItems="center">
+
+                  
+                  <AccessTimeIcon style={{fontSize:'14px'}} />
                     &nbsp;<Moment filter={toUpperCaseFilter} fromNow>{item.time_elapsed}</Moment>&nbsp;
-                    <VisibilityOutlinedIcon fontSize='small'/>&nbsp;{item.views}
+                    </Box>
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{marginTop:'4px'}}>
+                    <VisibilityOutlinedIcon style={{fontSize:'14px'}} />&nbsp;{item.views}
+                    </Box>
                   </Box>
               </CardContent>
 
@@ -363,12 +446,14 @@ const Videos = () => {
       <Grid item xs={12} style={{ marginLeft: '45%' }}>
         {loading && <CircularProgress disableShrink />}
         {error && 'Error'}
-        {!hasMore && <Button size="small" color="primary">
+        {errormsg}
+        {/* {!hasMore && <Button size="small" color="primary">
           No more Records
-            </Button>}
+            </Button>} */}
       </Grid>
       
       <ModalPortal open={isOpen} vidurl = {videourl} onClose={() => setIsOpen(false)}></ModalPortal>
+      </Grid>
     </>
   )
 

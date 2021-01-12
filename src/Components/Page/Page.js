@@ -14,12 +14,12 @@ const Page =  (({
         
         {...rest}
         >
-           <Box display="flex" p={2} pt={0} pb={5}>
-                <Box p={1} flexGrow={1}>
+           <Box display="flex" pl={2} pt={0} pb={1}>
+                <Box pt={1} pb={2} pl={1} flexGrow={1}>
                 {breadcomb.slice(1).charAt(0).toUpperCase() + breadcomb.slice(2)}
                 
                 </Box>
-                <Box p={1}>
+                <Box pt={1} pr={2}>
                 <NavLink to='/'>Dashboard</NavLink>/{breadcomb.slice(1).charAt(0).toUpperCase() + breadcomb.slice(2)}
                 </Box>
                

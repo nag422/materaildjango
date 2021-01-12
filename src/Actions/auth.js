@@ -107,12 +107,15 @@ export const googleAuthenticate = (state, code) => async dispacth => {
         }
         const details ={
             'state':state,
-            'code':code
+            'code':code,
+            'first_name':'imfirstname'
+            
         };
         const formBody = Object.keys(details).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&')
         try {
             const res = await axios.post(`${process_env_REACT_APP_API_URL}/auth/o/google-oauth2/?${formBody}`,config);
-            
+            console.log(res.data)
+            alert(res.data)
             dispacth({
                 type: GOOGLE_AUTH_SUCCESS,
                 payload:res.data
@@ -189,14 +192,14 @@ export const login = (email, password) => async dispatch => {
     }
 };
 
-export const signup = (name, email, password, re_password) => async dispatch => {
+export const signup = (first_name, email, provider, password, re_password) => async dispatch => {
     const config = {
         headers: {
             'Content-Type': 'application/json'
         }
     }
     
-    const body = JSON.stringify({ name, email, password, re_password }); 
+    const body = JSON.stringify({ first_name, email,provider,password, re_password }); 
    
 
     try {
@@ -224,15 +227,18 @@ export const verify = (uid, token) => async dispatch => {
 
     try {
         const res = await axios.post(`${process_env_REACT_APP_API_URL}/auth/users/activation/`, body, config);
-
+        
         dispatch({
             type: ACTIVATION_SUCCESS,
             payload: res.data
         });
+        
     } catch (err) {
+        alert(err)
         dispatch({
             type: ACTIVATION_FAIL
         });
+        
     }
 };
 export const reset_password = (email) => async dispatch => {

@@ -9,7 +9,7 @@ const MODAL_STYLES = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   backgroundColor: '#FFF',
-  padding: '10px',
+  padding: '5px',
   zIndex: 1000,
   transition: 'all 0.75s ease-out',
   
@@ -28,6 +28,11 @@ const OVERLAY_STYLES = {
 
 const BUTTON_STYLES = {
     border:'1px solid lightgray',
+    backgroundColor:'red',
+    color:'#fff',
+    float: 'right',
+    marginTop:'-35px',
+    cursor:'pointer'
     
     // fontSize: '12px'
 }
@@ -40,7 +45,7 @@ export default function ModalPortal({ open, vidurl, onClose }) {
       <div style={OVERLAY_STYLES} />
       <div style={MODAL_STYLES}>
           <div onClick={onClose} style={{zIndex:999999}}>
-          <button className="btn btn-sm btn-danger m-2">{'X'}</button>    
+          <button style={BUTTON_STYLES}>{'X'}</button>    
           </div>
 
           <div>

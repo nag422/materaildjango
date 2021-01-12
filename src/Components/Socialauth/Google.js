@@ -19,7 +19,7 @@ const Google = (props) => {
             
 
             if(state && code){
-                props.googleAuthenticate(state, code);
+                props.googleAuthenticate(state, code ,'google');
             }
             
         
@@ -28,10 +28,11 @@ const Google = (props) => {
     }, [])
     return (
         <div>
-            <Switch>
-            <Route exact path="/google" component= {Login} />            
+            <Switch>                   
+            <Route exact path="/google" component= {Login} />
             <Route exact path="/" component= {Login} />
             </Switch>
+            Signing in
         </div>
     )
 }

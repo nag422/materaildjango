@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import {
     AppBar, Container, Toolbar, Grid,
     IconButton, Badge, makeStyles, Hidden,
-    Card, CardContent, Paper, Box, Link
+    Card, CardContent, Paper, Box, Link, Menu, MenuItem
 } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,8 +16,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import VideoLibraryOutlinedIcon from '@material-ui/icons/VideoLibraryOutlined';
@@ -31,6 +29,13 @@ import routes from "../routes.js";
 import Page from "../Components/Page/Page"
 import { connect } from 'react-redux';
 import { logout } from '../Actions/auth';
+// import ExtraNavMenu from '../Components/Controls/ExtraNavMenu';
+
+
+
+
+
+
 
 const drawerWidth = 240;
 
@@ -118,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
     },
     maincontent: {
         flexGrow: 1,
-        padding: theme.spacing(6),
+        padding: theme.spacing(3,1),
         backgroundColor:'#f1f4f5',
         [theme.breakpoints.down('sm')]: {
             padding: theme.spacing(6, 0),
@@ -210,13 +215,13 @@ function Admin({logout,isAuthenticated}) {
                             <Grid item sm style={{ display: 'flex', justifyContent: 'flex-end' }}>
 
 
+                             
                                 
-                                {/* <IconButton>
-                                    <Badge badgeContent={4} color="secondary">
-                                        <NotificationsNoneIcon fontSize="small" />
-                                    </Badge>
-                                </IconButton>
-
+                                
+                                
+                               
+                                
+                                {/*
                                 <IconButton>
                                     <Badge badgeContent={3} color="primary">
                                         <ChatBubbleOutlineIcon fontSize="small" />

@@ -24,7 +24,8 @@ const ProfileDetails = ({ className,user,setsnakreq,snakreq,open, ...rest }) => 
   const [values, setValues] = React.useState({
     first_name:"",
     last_name:"",
-    phone:""
+    phone:"",
+    email:''
   });
  
   React.useEffect(() => {
@@ -32,7 +33,8 @@ const ProfileDetails = ({ className,user,setsnakreq,snakreq,open, ...rest }) => 
       ...values,
       first_name:user.first_name,
       last_name:user.last_name,
-      phone: user.phone
+      phone: user.phone,
+      email:user.email
     });
     
   }, [user])
@@ -60,6 +62,7 @@ const ProfileDetails = ({ className,user,setsnakreq,snakreq,open, ...rest }) => 
     body.append('first_name',values.first_name);
     body.append('last_name',values.last_name);
     body.append('phone',values.phone);
+    body.append('email',values.email);
     
     axios.post(`https://app.kiranvoleti.com/testing/checkfun/`,body, config)
     .then(res => {    
@@ -157,7 +160,23 @@ const ProfileDetails = ({ className,user,setsnakreq,snakreq,open, ...rest }) => 
                 value={values.phone}
                 variant="outlined"
               />
+             
             </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+            <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                onChange={handleChange}
+                type="email"
+                value={values.email}
+                variant="outlined"
+              />
+              </Grid>
            
            
           </Grid>

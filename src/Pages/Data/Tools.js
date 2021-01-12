@@ -15,11 +15,13 @@ import Typography from '@material-ui/core/Typography';
 
 
 const useStyles = makeStyles(theme => ({
+  root:{},
   cardsource: {
     // maxWidth:'370px',
     // maxWidth: '340px',
     // boxSizing:'border-box',
     marginTop: '1%',
+    borderRadius:'0px',
     '& .MuiCardContent-root': {
       padding: '22px',
       minHeight: '230px',
@@ -44,11 +46,12 @@ const useStyles = makeStyles(theme => ({
 
   },
   small: {
-    width: theme.spacing(2),
-    height: theme.spacing(2),
+    width:'10px',
+    height:'10px',
+    top:'5.5px'
   },
   content: {
-    padding: '5px auto auto atuo'
+    padding: '2px auto auto atuo'
   },
 
   formalign: {
@@ -84,6 +87,62 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       opacity: 0.5
     }
+  },
+  
+  tagcontent:{
+    position: 'relative',
+    marginTop: 'auto',
+    paddingTop: '5%',
+    display: 'flex',
+    maxHeight: '56px',
+    minHeight: '56px',
+    overflow: 'hidden',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+  },
+  tagtext:{
+    marginTop: '5px',
+    fontSize: '8px',
+    position: 'relative',      
+    color: '#5c5a5a',
+    display: 'flex',
+    flexDirection: 'row',
+    cursor: 'pointer'
+  },
+  tagcategorytesting:{
+    alignItems:"center",
+    backgroundColor: '#f9f9f9',
+      padding: '5px',
+      color: '#030303',
+      height: '24px',
+      minWidth: '12px',
+      fontSize: '11px',
+      // padding: 'auto 0px',
+      borderRadius: '16px',
+      boxSizing: 'border-box',
+      outline: 'none',
+      overflow: 'hidden',
+      
+      /* user-select: none; */
+      textAlign: 'center',
+      verticalAlign: 'baseline',
+      /* margin-bottom: -11.5rem; */
+      marginTop: '-0.5rem',
+      marginRight: '3px',
+      cursor: 'pointer'
+  },
+  searchformcustom:{
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"space-between",
+    
+    '& .MuiSelect-select':{
+      minWidth:'150px'
+    },
+    [theme.breakpoints.down('sm')]: {
+      justifyContent:"flex-start",
+      margin:'5px 3px'
+    }
   }
 }));
 const toUpperCaseFilter = (d) => {
@@ -105,6 +164,14 @@ const Tools = () => {
   const [query, setQuery] = useState('')
   const [pageNumber, setPageNumber] = useState(1)
   const [orderby, setOrderby] = useState('newest')
+  const [errormsg, setErrormsg] = useState('')
+  React.useEffect(() => {
+    if (!localStorage.getItem('remain')) {
+      setErrormsg('Your Plan is Expired! Upgrade Now')      
+      
+    }
+  
+  }, [])
 
   const {
     tools,
@@ -156,7 +223,7 @@ const Tools = () => {
 
   return (
     <>
-      <Grid container style={{ backgroundColor: "#fff", padding: '2% 1% 0 4%' }}
+      <Grid container style={{ backgroundColor: "#fff", padding: '0.6% 0 0 2%', minHeight:'100px' }}
         alignContent="center"
         alignItems="center"
         justify="flex-start"
@@ -166,50 +233,53 @@ const Tools = () => {
 
 
         <Grid item xs={12} md={3} sm={5}>
+          
+          <Box className={classes.searchformcustom}>
+          <label>Query : </label>
           <TextField id="outlined-basic"
             label="keyword"
             variant="outlined"
-            size="small"
-            helperText="Enter Query"
+            size="small"            
             onChange={(e) => setQuery(e.target.value)}
           />
+          </Box>
         </Grid>
 
-        <Grid item xs={12} md={5} sm={5} className={classes.formalign}>
+        <Grid item xs={12} md={5} sm={12} className={classes.formalign}>
+        <Box className={classes.searchformcustom}>
+          <InputLabel >Order : </InputLabel>
           <TextField
             id="outlined-select-currency"
             select
             label="Select"
             size="small"
-            onChange={(e) => setOrderby(e.target.value)}
-            helperText="select order"
+            onChange={(e) => setOrderby(e.target.value)}            
             variant="outlined"
           >
 
             <MenuItem key='newest' value='newest'>
-              Newest
+              New
             </MenuItem>
             <MenuItem key='oldest' value='oldest'>
               Oldest
             </MenuItem>
 
           </TextField>
+          
           <Button onClick={handleSearch} className={classes.buttonalign} variant="contained" color="primary">Submit</Button>
+          </Box>
         </Grid>
 
-
-
-
-
-      </Grid>
+        </Grid>
+        <Grid container spacing={2}>
       {tools.map((item, index) => {
         if (tools.length === index + 1) {
           // return <div ref={lastBookElementRef} key={index}>{article.title}</div>
           return <Grid item xs={12} md={3} sm={3} key={index} ref={lastBookElementRef}>
 
-            <Card elevation={0} className={classes.cardsource}>
+<Card elevation={0} className={classes.cardsource}>
               <CardActionArea>
-                <Link href={item.URL} underline="none">
+                <Link href={`/view_website/${item.id}/${item.category.toLowerCase()}`} underline="none">
                   <CardMedia
                     component="img"
                     alt={item.title}
@@ -218,9 +288,10 @@ const Tools = () => {
                     title={item.title}
                     onError={addDefaultSrc}
                   />
-                    
-                </Link>
+                
+                
                 <Box className={classes.productImageOverlay}></Box>
+                </Link>
               </CardActionArea>
               <CardContent>
 
@@ -232,7 +303,7 @@ const Tools = () => {
                     </Avatar>
                   </Box>
                   <Box pl={1}>
-                    <Link href={item.URL} underline="none" color="inherit">
+                    <Link href={`/view_website/${item.id}/${item.category.toLowerCase()}`} underline="none" color="inherit">
                       <Typography gutterBottom variant="body2" color="textSecondary" component="p">
 
                         {urlparser(item.URL)}
@@ -242,23 +313,24 @@ const Tools = () => {
 
                 </Box>
                 <Box className={classes.content}>
-                  <Link href={item.URL} underline="none" color="inherit">
+                  <Link href={`/view_website/${item.id}/${item.category.toLowerCase()}`} underline="none" color="inherit">
                     <Typography variant="h6" component="p">
                       {item.title}
                     </Typography>
                   </Link>
                 </Box>
 
-                <Box display="flex" mb={2} mt={2} flexDirection="row" alignItems="flex-start">
-                  <LocalOfferIcon fontSize="small" style={{ color: "gray", marginTop: "5px" }} />
-                  {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+                <Box className={classes.tagcontent}>
+                  <Box className={classes.tagtext}>
+                  <LocalOfferIcon  style={{ color: "lightgray",fontSize:'1rem' }} />
+                  
 
 
                   {item.keytags.map((val, index) => (
-                    <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
-
+                    // <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
+                    <div key={index}  className={classes.tagcategorytesting} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }}>{val}</div>
                   ))}
-
+                </Box>
                 </Box>
                 {/* <Box display="flex" justifyContent="flex-start" alignItems="center">
                   <AccessTimeIcon fontSize='small' />
@@ -316,16 +388,17 @@ const Tools = () => {
                   </Link>
                 </Box>
 
-                <Box display="flex" mb={2} mt={2} flexDirection="row" alignItems="flex-start">
-                  <LocalOfferIcon fontSize="small" style={{ color: "gray", marginTop: "5px" }} />
-                  {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+                <Box className={classes.tagcontent}>
+                  <Box className={classes.tagtext}>
+                  <LocalOfferIcon  style={{ color: "lightgray",fontSize:'1rem' }} />
+                  
 
 
                   {item.keytags.map((val, index) => (
-                    <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
-
+                    // <Chip size="small" key={index} label={val} style={{ margin: "2px", wrap: 'wrap', overflow: 'hidden' }} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }} />
+                    <div key={index}  className={classes.tagcategorytesting} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }}>{val}</div>
                   ))}
-
+                </Box>
                 </Box>
                 {/* <Box display="flex" justifyContent="flex-start" alignItems="center">
                   <AccessTimeIcon fontSize='small' />
@@ -336,15 +409,18 @@ const Tools = () => {
             </Card>
 
           </Grid>
+          
 
         }
       })}
       <Grid item xs={12} style={{ marginLeft: '45%' }}>
         {loading && <CircularProgress disableShrink />}
         {error && 'Error'}
-        {!hasMore && <Button size="small" color="primary">
+        {errormsg}
+        {/* {!hasMore && <Button size="small" color="primary">
           No more Records
-            </Button>}
+            </Button>} */}
+      </Grid>
       </Grid>
     </>
   )

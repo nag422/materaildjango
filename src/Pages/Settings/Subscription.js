@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import GroupIcon from '@material-ui/icons/Group';
 import { NavLink } from 'react-router-dom';
-
+import Moment from 'react-moment';
 const useStyles = makeStyles(() => ({
     root: {},
     avatar: {
@@ -61,6 +61,7 @@ const Subscription = ({ className, ...rest }) => {
                     gutterBottom
                     variant="body2">
                 Expires on :  {localStorage.getItem('expiryon')}
+                &nbsp;(<Moment  fromNow>{localStorage.getItem('expiryon')}</Moment>)
                
                 </Typography>
                 

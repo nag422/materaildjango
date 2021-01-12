@@ -14,6 +14,7 @@ export default function useArticleSearch(query, pageNumber, orderby) {
     }, [query,orderby])
 
     useEffect(() => {
+        if(!localStorage.getItem('remain')) return;
         setLoading(true)
         setError(false)
         let cancel
@@ -23,7 +24,7 @@ export default function useArticleSearch(query, pageNumber, orderby) {
             params: { q: query, page: pageNumber, orderby: orderby },
             headers:{
                 'Content-Type': 'application/json',
-                'Authorization': `JWT ${localStorage.getItem('access')}`,
+                'Authorization': `JWT ${localStorage.getItem('access')}`,                
                 'Accept': 'application/json'
             },
             

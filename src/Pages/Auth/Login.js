@@ -12,6 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
 
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,6 +26,7 @@ import { login } from "../../Actions/auth";
 import GoogleButton from 'react-google-button'
 
 import axios from 'axios';
+import { IconButton } from '@material-ui/core';
 
 
 function Copyright() {
@@ -163,8 +166,24 @@ const initialValues = {
     password: "",
 };
 
-function Login({login,isAuthenticated}) {
+function Login({login,isAuthenticated,isAlert}) {
     const classes = useStyles();
+
+    const [open, setOpen] = React.useState(false);
+    const [msg, setMsg] = React.useState('');
+
+  
+    
+      const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
+
+
+
     if (isAuthenticated) {
         return <Redirect to="/profile" />
     }
@@ -188,8 +207,15 @@ function Login({login,isAuthenticated}) {
     
 
     const handleSubmit = async (values) => {
-        
+        setMsg('Signing in Please Wait..')
+        setOpen(true);
         await login((values.email),(values.password))
+        if(isAlert){
+            setMsg('Something is went wrong, try again')
+            setOpen(true)
+            return 
+        }
+        
         if (isAuthenticated) {
             return <Redirect to="/profile" />
         }
@@ -199,6 +225,23 @@ function Login({login,isAuthenticated}) {
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
+            <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message={msg}
+        action={          
+            
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          
+        }
+      />
             <Grid item xs={false} sm={4} md={7} className={classes.image} />
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <div className={classes.paper}>
@@ -323,7 +366,8 @@ function Login({login,isAuthenticated}) {
 };
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
+    isAlert: state.auth.loginaction
 });
 
 export default connect(mapStateToProps, { login  })(Login);

@@ -12,10 +12,8 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormikField from "../../Components/Controls/FormikField";
 
@@ -70,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const signupschema = Yup.object().shape({
-    name: Yup.string()
+    first_name: Yup.string()
         .min(2, 'Too Short!'),
     email: Yup.string()
         .min(2, 'Too Short!')
@@ -95,10 +93,11 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
 const initialValues = {
-    name:"",
+    first_name:"",
     email: "",
     password: "",
-    re_password:""
+    re_password:"",
+    provider:"rest"
 };
 
 function Signup({signup,isAuthenticated,isSignup}) {
@@ -133,8 +132,8 @@ function Signup({signup,isAuthenticated,isSignup}) {
     
 
     const handleSubmit = (values) => {
-        
-        signup((values.name),(values.email),(values.password),(values.re_password))
+       
+        signup((values.first_name),(values.email),(values.provider),(values.password),(values.re_password))
         setRequestSent(true)
         if (!isSignup){
             setSnakreq({...snakreq , message:"Something is went wrong, Make sure this is unique Email !!", color:"error"})
@@ -185,13 +184,14 @@ function Signup({signup,isAuthenticated,isSignup}) {
 
                                 <Grid item xs={12}>
                                 <FormikField
-                                        name="name"
+                                        name="first_name"
                                         label="Name"
                                         type="text"
                                         required
                                         textvariant="outlined"
 
                                     />
+                                   
                                     <br></br>
                                     <FormikField
                                         name="email"
