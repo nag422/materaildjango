@@ -170,6 +170,9 @@ const Tools = () => {
       setErrormsg('Your Plan is Expired! Upgrade Now')      
       
     }
+    if(localStorage.getItem('trends') == "yes"){
+      window.location.replace('/profile')
+  }
   
   }, [])
 

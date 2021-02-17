@@ -159,7 +159,7 @@ const toUpperCaseFilter = (d) => {
 };
 
 const Articles = () => {
-
+ 
   
   const [query, setQuery] = useState('')
   const [pageNumber, setPageNumber] = useState(1)
@@ -170,6 +170,10 @@ const Articles = () => {
       setErrormsg('Your Plan is Expired! Upgrade Now')      
       
     }
+    if(localStorage.getItem('trends') == "yes"){
+        window.location.replace('/profile')
+    }
+    
   
   }, [])
   
@@ -295,9 +299,9 @@ const Articles = () => {
                     title={item.title}
                     onError={addDefaultSrc}
                   />
-
+                    <Box className={classes.productImageOverlay}></Box>
                 </Link>
-                <Box className={classes.productImageOverlay}></Box>
+                
               </CardActionArea>
               <CardContent>
 
@@ -373,9 +377,9 @@ const Articles = () => {
                     title={item.title}
                     onError={addDefaultSrc}
                   />
-
+                  <Box className={classes.productImageOverlay}></Box>
                 </Link>
-                <Box className={classes.productImageOverlay}></Box>
+                
               </CardActionArea>
               <CardContent>
 

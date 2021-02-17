@@ -8,6 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import axios from 'axios'
 import Moment from 'react-moment';
+import axiosInstance from '../../axiosmodelapi'
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -29,7 +30,8 @@ const ProfileIndex = () => {
     usertype:"",
     phone:"",
     id:'',
-    tier:''
+    tier:'',
+    trends:'',
 
   });
   
@@ -52,12 +54,13 @@ const ProfileIndex = () => {
       }
     }
     
-    axios.get(`https://app.kiranvoleti.com/testing/checkfun/`,config)
+    axiosInstance.get(`https://app.kiranvoleti.com/testing/checkfun/`,config)
     .then(res => {
       
       // setProfilename(res.data.response.first_name)
       
       
+       
      (res.data.response.map((val) => {
         setUser({
           ...user,
@@ -68,7 +71,8 @@ const ProfileIndex = () => {
             tier:val.tier,
             phone:val.phone,
             joined:<Moment format="D MMM YYYY" withTitle>{val.joined}</Moment>,
-            usertype: val.is_staff ? (val.is_superuser ? 'Admin': 'Staff') : 'Subscriber'
+            usertype: val.is_staff ? (val.is_superuser ? 'Admin': 'Staff') : 'Subscriber',
+            trends:''
 
         })
         localStorage.setItem('first_name',val.first_name)
@@ -78,6 +82,7 @@ const ProfileIndex = () => {
         localStorage.setItem('usertype',val.is_staff ? (val.is_superuser ? 'Admin': 'Staff') : 'Subscriber')
         localStorage.setItem('userid',val.id)
         localStorage.setItem('tier',val.tier)
+        localStorage.setItem('trends',val.trends?'yes':'no')
         
       }
      
@@ -90,7 +95,7 @@ const ProfileIndex = () => {
         localStorage.setItem('remain',res.data.remain)
         localStorage.setItem('expiryon',res.data.totaldays)
 
-
+        
       
     })
 
@@ -121,7 +126,7 @@ const ProfileIndex = () => {
                     {snakreq.message}
                 </Alert>
             </Snackbar>
-        
+        <Grid container spacing={2}>
             <Grid
             item
             lg={4}
@@ -170,6 +175,7 @@ const ProfileIndex = () => {
             setsnakreq = {setSnakreq}  
             open={setOpen}   
             />
+          </Grid>
           </Grid>
         </>
     )

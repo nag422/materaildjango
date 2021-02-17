@@ -4,31 +4,34 @@ import Subscription from './Subscription'
 import Notifications from './Notifications'
 import Security from './Security'
 const index = () => {
-    return (
-        <>
-        
+  return (
+    <>
+      {/* <Grid container W-100> */}
         <Grid
-        item
-        xs={12}
-      >
-       <Subscription className="subscriptclass" />
-      </Grid>
+          item
+          xs={12}
+          
+          w-100
+        >
+          <Subscription className="subscriptclass" />
+        </Grid>
 
-      <Grid
-        item
-        xs={12}
-      >
-        <Notifications className="notifyclass" />
-      </Grid>
-      
-      <Grid
-        item
-        xs={12}
-      >
-        <Security className="securityclass" />
-      </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Notifications className="notifyclass" />
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+        >
+          <Security className="securityclass" />
+        </Grid>
+      {/* </Grid> */}
     </>
-    )
+  )
 }
 
 export default index

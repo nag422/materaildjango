@@ -22,7 +22,7 @@ import { Redirect,useHistory } from 'react-router-dom';
     const params = new URLSearchParams(search);
     const inr = params.get('inr');    
     if (inr == 0){
-      alert('free service')
+      
       const formdata = new FormData();
       const config = {
         headers: {

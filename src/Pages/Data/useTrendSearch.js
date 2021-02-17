@@ -1,53 +1,57 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios';
+import React,{ useEffect, useState } from 'react'
 import axiosInstance from '../../axiosmodelapi';
 
-export default function useArticleSearch(query, pageNumber, orderby) {
+
+
+export default function useTrendSearch(query, pageNumber, orderby) {
     
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
-    const [articles, setArticles] = useState([])
+    const [videos, setVideos] = useState([])
     const [hasMore, setHasMore] = useState(false)
-   
+    
     
     useEffect(() => {
-        setArticles([])
+        setVideos([])
         pageNumber=1
     }, [query,orderby])
 
-    useEffect(() => {
-        // Fetch the token from storage then navigate to our appropriate place
+    React.useEffect(() => {      
         
 
     
         setLoading(true)
         setError(false)
-
-             
+        
+        
+      
 
 
         
-        axiosInstance.get('/user/articles_scroll_page/',{
+        axiosInstance.get('/ui/admin/trendsscroll/',{
             
             params: { q: query, page: pageNumber, orderby: orderby },
-            
+           
             
             
         }).then(res => {
-            setArticles(prevArticles => {
-                return [...new Set([...prevArticles, ...res.data.response])]
+            setVideos(prevVideos => {
+                return [...new Set([...prevVideos, ...res.data.response])]
             })
             setHasMore(res.data.response.length > 0)
             setLoading(false)
         }).catch(e => {
             // console.log(e.message)
             setLoading(false)
-            if (axios.isCancel(e)) return
+            
             setError(true)
         })
         // return () => cancel()
-    }, [query, pageNumber,orderby])
+    }, [query, pageNumber, orderby])
 
-    return { loading, error, articles, hasMore }
+
+   
+
+    return { loading, error, videos, hasMore }
 }
 

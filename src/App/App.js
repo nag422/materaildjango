@@ -78,6 +78,7 @@ function App() {
             <Route exact path="/articles" component= {Admin} />
             <Route exact path="/tools" component= {Admin} />
             <Route exact path="/videos" component= {Admin} />
+            <Route exact path="/trends" component= {Admin} />
             <Redirect from="/ui/admin" to="/admin/" />
             <Route exact path="/" component= {Auth} />
             

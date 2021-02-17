@@ -22,6 +22,7 @@ import VideoLibraryOutlinedIcon from '@material-ui/icons/VideoLibraryOutlined';
 import BuildOutlinedIcon from '@material-ui/icons/BuildOutlined';
 import Avatar from '@material-ui/core/Avatar';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import Slide from '@material-ui/core/Slide';
 import NavMenu from '../Components/Controls/NavMenu'
 import { Route, Switch, Redirect, useLocation, NavLink } from "react-router-dom";
@@ -292,7 +293,9 @@ function Admin({logout,isAuthenticated}) {
                         <ListItemText primary='Dashboard' />
                     </ListItem>
                     </Link>:null
-}
+                    }
+                    {localStorage.getItem('trends') == 'no' ?
+                    <>
                     <NavLink to="/articles" activeClassName={classes.activeclass} className={classes.textdecor}>
                     <ListItem button>                        
                         <ListItemIcon><FileCopyOutlinedIcon fontSize='small' /></ListItemIcon>
@@ -311,8 +314,15 @@ function Admin({logout,isAuthenticated}) {
                         <ListItemIcon><BuildOutlinedIcon fontSize='small' /></ListItemIcon>
                         <ListItemText primary='Tools' />
                     </ListItem>
-                    </NavLink>
-
+                    </NavLink></>:null}
+                    {localStorage.getItem('trends') == 'yes'?
+                    <NavLink to="/trends" activeClassName={classes.activeclass} className={classes.textdecor}>
+                    <ListItem button>
+                        <ListItemIcon><TrendingUpIcon fontSize='small' /></ListItemIcon>
+                        <ListItemText primary='Trends' />
+                    </ListItem>
+                    </NavLink>:null
+                    }
 
                 </List>
             </Drawer>
@@ -331,18 +341,20 @@ function Admin({logout,isAuthenticated}) {
                     title='KiranVoleti | Digitalbox'
                     breadcomb={location.pathname}
                 >
-                    <Container maxWidth="lg">
+                    {/* <Container> */}
                         <Grid
+                        
                             container
                             spacing={2}
                         >
-
+                            <Grid item md={12} xs={12} lg={12}>
                             <Switch>
                                 {getRoutes(routes)}
                             </Switch>
+                            </Grid>
 
                         </Grid>
-                    </Container>
+                    {/* </Container> */}
                 </Page>
 
 
