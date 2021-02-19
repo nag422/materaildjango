@@ -156,10 +156,12 @@ const Trends = () => {
   const [pageNumber, setPageNumber] = useState(1)
   const [videourl, setVideourl] = useState(false)
   const [isOpen, setIsOpen] = useState(false);
-  const [orderby, setOrderby] = useState('newest')
+  const [orderby, setOrderby] = useState('50')
   const [errormsg, setErrormsg] = useState('')
   const [redalert, setRedalert] = useState(false)
   const [isloading, setIsloading] = useState(false)
+  const [error, setError] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
 
 
   React.useEffect(() => {
@@ -171,36 +173,12 @@ const Trends = () => {
   }, [])
 
 
-  const {
-    videos,
-    hasMore,
-    loading,
-    error
-  } = useTrendSearch(query, pageNumber, orderby, setPageNumber)
+  
 
   const classes = useStyles();
 
 
-  React.useEffect(() => {
-
-    setDatavideos(videos)
-
-    // return () => {
-
-    // }
-  }, [videos])
-
-  const observer = useRef()
-  const lastBookElementRef = useCallback(node => {
-    if (loading) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPageNumber(prevPageNumber => prevPageNumber + 1)
-      }
-    })
-    if (node) observer.current.observe(node)
-  }, [loading, hasMore])
+  
 
 
 
@@ -224,12 +202,7 @@ const Trends = () => {
     setVideourl(e)
   };
 
-  // const handleClose = () => {
-  //   setIsOpen(false);
-  //   setVideourl('')
-  // };
-
-
+ 
 
 
 
@@ -247,21 +220,22 @@ const Trends = () => {
     }
 
     setRedalert(false)
-    // setFrontloading(true)
+    
 
 
     const form_data = new FormData();
     form_data.append('q', query);
+    form_data.append('count', orderby);
 
-    setQuery('')
-    triggers();
 
     setIsloading(true)
     axiosInstance.post('/ui/admin/trendsscroll/', form_data).then(res => {
-      setQuery(query);
-
+      
       setIsloading(false)
+      console.log(res.data)
+      setDatavideos(res.data.trends)
     }).catch(err => {
+      console.log(err.message)
       setRedalert(true)
       setIsloading(false)
     })
@@ -270,13 +244,31 @@ const Trends = () => {
 
   }
 
-  const triggers = React.useCallback(
-    () => {
 
-      setDatavideos([])
-    },
-    [],
-  )
+  const stage = ((views) => {
+    if (views == 0) {
+      return 'Normal'
+    }
+    else if (views >= 0 && views <= 800) {
+      return 'Below Average'
+    }
+    else if (views > 800 && views <= 1000) {
+      return 'Average'
+    }
+    else if (views > 1000 && views <= 5000) {
+      return 'Best'
+    }
+    else if (views > 5000 && views <= 80000000) {
+      return 'Viral'
+    }
+    else if (views > 80000000 && views <= 200000000) {
+      return 'Trending'
+    } else {
+      return 'Trending'
+    }
+
+  })
+
 
 
 
@@ -286,6 +278,7 @@ const Trends = () => {
     <>
 
       {redalert && <Alert onClose={() => { setRedalert(false) }} severity="error">Please Enter a Query!</Alert>}
+
       <Grid container style={{ backgroundColor: "#fff", padding: '0.6% 0 0 2%', minHeight: '100px' }}
         alignContent="center"
         alignItems="center"
@@ -308,14 +301,14 @@ const Trends = () => {
               InputLabelProps={{
                 shrink: query ? true : false
               }}
-              shrink={true}
+              
             />
           </Box>
         </Grid>
 
         <Grid item xs={12} md={5} sm={12} className={classes.formalign}>
           <Box className={classes.searchformcustom}>
-            <InputLabel >Order : </InputLabel>
+            <InputLabel >Search Count : </InputLabel>
             <TextField
               id="outlined-select-currency"
               select
@@ -326,12 +319,17 @@ const Trends = () => {
               value={orderby}
             >
 
-              <MenuItem key='newest' value='newest'>
-                New
+              <MenuItem key='50' value='50'>
+                50
             </MenuItem>
-              <MenuItem key='oldest' value='oldest'>
-                Oldest
+              <MenuItem key='100' value='100'>
+                100
             </MenuItem>
+            <MenuItem key='200' value='200'>
+                200
+            </MenuItem>
+            
+            
 
             </TextField>
 
@@ -340,91 +338,17 @@ const Trends = () => {
         </Grid>
 
       </Grid>
+
+
+      {/* Trending */}
+
+
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Trending</Typography>
+      </Box>
       <Grid container spacing={2}>
         {datavideos.map((item, index) => {
-          if (datavideos.length === index + 1) {
-            // return <div ref={lastBookElementRef} key={index}>{article.title}</div>
-            return <Grid item xs={12} md={3} sm={3} key={index} ref={lastBookElementRef}>
-
-              <Card elevation={0} className={classes.cardsource}>
-                <CardActionArea>
-
-                  <CardMedia
-                    component="img"
-                    alt={item.title}
-                    height="140"
-                    image={item.image}
-                    title={item.title}
-                    onError={addDefaultSrc}
-                    onClick={() => handleClickOpen(item.URL)}
-                  />
-
-
-                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
-                </CardActionArea>
-                <CardContent>
-
-
-                  <Box display="flex">
-
-                    <Box>
-                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
-                        <Avatar className={classes.small} alt={item.title} src={item.image} />
-
-                      </Link>
-                    </Box>
-                    <Box pl={1}>
-                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
-                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
-
-                          {item.channel_title.slice(0, 20)}
-                        </Typography>
-                      </Link>
-                    </Box>
-
-                  </Box>
-
-
-                  <Box className={classes.content}>
-                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
-                      <Typography variant="h6" component="p">
-                        {item.title}
-                      </Typography>
-                    </Link>
-                  </Box>
-
-                  <Box className={classes.tagcontent}>
-                    <Box className={classes.tagtext}>
-                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
-                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
-
-
-                      {/* {item.keytags.map((val, index) => ( */}
-
-                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>{item.dataquery}</div>
-
-                      {/* ))} */}
-
-                    </Box>
-                  </Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-                    <Box display="flex" justifyContent="center" alignItems="center">
-
-
-                      <AccessTimeIcon style={{ fontSize: '14px' }} />
-                    &nbsp;<Moment filter={toUpperCaseFilter} fromNow>{(item.time_elapsed)}</Moment>&nbsp;
-                    
-                    </Box>
-                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
-                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
-                    </Box>
-                  </Box>
-                </CardContent>
-
-              </Card>
-
-            </Grid>
-          } else {
+          if (datavideos.length && item.views >= 80000000) {
             // return <div key={index}>{article.title}</div>
             return <Grid item xs={12} md={3} sm={3} key={index}>
 
@@ -481,12 +405,14 @@ const Trends = () => {
                       {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
 
 
-                      {/* {item.keytags.map((val, index) => (
-                    <div key={index}  className={classes.tagcategorytesting} id={val} onClick={(e) => { setQuery(val); setPageNumber(1) }}>{val}</div>
+                      {/* {item.keytags.map((val, index) => ( */}
 
-                  ))} */}
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
 
-                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>{item.dataquery}</div>
+                      {/* ))} */}
+
                     </Box>
                   </Box>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
@@ -494,11 +420,13 @@ const Trends = () => {
 
 
                       <AccessTimeIcon style={{ fontSize: '14px' }} />
-                    {/* &nbsp;<Moment filter={toUpperCaseFilter} fromNow locale tz="Asia/Kolkata">{item.time_elapsed}</Moment>&nbsp; */}
-                    &nbsp; <time>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</time>&nbsp;
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
                     </Box>
+
                     <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
                       <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
                     </Box>
                   </Box>
                 </CardContent>
@@ -506,22 +434,555 @@ const Trends = () => {
               </Card>
 
             </Grid>
-
           }
         })}
-        <Grid item xs={12} style={{ marginLeft: '45%' }}>
-          {loading && <CircularProgress disableShrink />}
-          {error && 'Error'}
-          {errormsg}
-          {!hasMore && !loading ? <Button size="small" color="primary">
-            No more Records
+
+
+
+      </Grid>
+
+
+      {/* Viral */}
+
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Viral</Typography>
+      </Box>
+      <Grid container spacing={2} pt={1}>
+
+        {datavideos.map((item, index) => {
+          if (datavideos.length && item.views > 5000 && item.views <= 80000000) {
+            // return <div key={index}>{article.title}</div>
+            return <Grid item xs={12} md={3} sm={3} key={index}>
+
+              <Card elevation={0} className={classes.cardsource}>
+                <CardActionArea>
+
+                  <CardMedia
+                    component="img"
+                    alt={item.title}
+                    height="140"
+                    image={item.image}
+                    title={item.title}
+                    onError={addDefaultSrc}
+                    onClick={() => handleClickOpen(item.URL)}
+                  />
+
+
+                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
+                </CardActionArea>
+                <CardContent>
+
+
+                  <Box display="flex">
+
+                    <Box>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Avatar className={classes.small} alt={item.title} src={item.image} />
+
+                      </Link>
+                    </Box>
+                    <Box pl={1}>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
+
+                          {item.channel_title.slice(0, 20)}
+                        </Typography>
+                      </Link>
+                    </Box>
+
+                  </Box>
+
+
+                  <Box className={classes.content}>
+                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
+                      <Typography variant="h6" component="p">
+                        {item.title}
+                      </Typography>
+                    </Link>
+                  </Box>
+
+                  <Box className={classes.tagcontent}>
+                    <Box className={classes.tagtext}>
+                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
+                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+
+
+                      {/* {item.keytags.map((val, index) => ( */}
+
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
+
+                      {/* ))} */}
+
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+
+
+                      <AccessTimeIcon style={{ fontSize: '14px' }} />
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
+                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
+                    </Box>
+                  </Box>
+                </CardContent>
+
+              </Card>
+
+            </Grid>
+          }
+        })}
+
+      </Grid>
+
+
+      {/* Best */}
+
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Best</Typography>
+      </Box>
+      <Grid container spacing={2} pt={1}>
+
+        {datavideos.map((item, index) => {
+          if (datavideos.length && item.views > 1000 && item.views <= 5000) {
+            // return <div key={index}>{article.title}</div>
+            return <Grid item xs={12} md={3} sm={3} key={index}>
+
+              <Card elevation={0} className={classes.cardsource}>
+                <CardActionArea>
+
+                  <CardMedia
+                    component="img"
+                    alt={item.title}
+                    height="140"
+                    image={item.image}
+                    title={item.title}
+                    onError={addDefaultSrc}
+                    onClick={() => handleClickOpen(item.URL)}
+                  />
+
+
+                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
+                </CardActionArea>
+                <CardContent>
+
+
+                  <Box display="flex">
+
+                    <Box>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Avatar className={classes.small} alt={item.title} src={item.image} />
+
+                      </Link>
+                    </Box>
+                    <Box pl={1}>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
+
+                          {item.channel_title.slice(0, 20)}
+                        </Typography>
+                      </Link>
+                    </Box>
+
+                  </Box>
+
+
+                  <Box className={classes.content}>
+                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
+                      <Typography variant="h6" component="p">
+                        {item.title}
+                      </Typography>
+                    </Link>
+                  </Box>
+
+                  <Box className={classes.tagcontent}>
+                    <Box className={classes.tagtext}>
+                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
+                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+
+
+                      {/* {item.keytags.map((val, index) => ( */}
+
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
+
+                      {/* ))} */}
+
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+
+
+                      <AccessTimeIcon style={{ fontSize: '14px' }} />
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
+                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
+                    </Box>
+                  </Box>
+                </CardContent>
+
+              </Card>
+
+            </Grid>
+          }
+        })}
+
+      </Grid>
+
+
+
+      {/* Average */}
+
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Average</Typography>
+      </Box>
+      <Grid container spacing={2}>
+
+        {datavideos.map((item, index) => {
+          if (datavideos.length && item.views > 800 && item.views <= 1000) {
+            // return <div key={index}>{article.title}</div>
+            return <Grid item xs={12} md={3} sm={3} key={index}>
+
+              <Card elevation={0} className={classes.cardsource}>
+                <CardActionArea>
+
+                  <CardMedia
+                    component="img"
+                    alt={item.title}
+                    height="140"
+                    image={item.image}
+                    title={item.title}
+                    onError={addDefaultSrc}
+                    onClick={() => handleClickOpen(item.URL)}
+                  />
+
+
+                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
+                </CardActionArea>
+                <CardContent>
+
+
+                  <Box display="flex">
+
+                    <Box>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Avatar className={classes.small} alt={item.title} src={item.image} />
+
+                      </Link>
+                    </Box>
+                    <Box pl={1}>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
+
+                          {item.channel_title.slice(0, 20)}
+                        </Typography>
+                      </Link>
+                    </Box>
+
+                  </Box>
+
+
+                  <Box className={classes.content}>
+                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
+                      <Typography variant="h6" component="p">
+                        {item.title}
+                      </Typography>
+                    </Link>
+                  </Box>
+
+                  <Box className={classes.tagcontent}>
+                    <Box className={classes.tagtext}>
+                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
+                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+
+
+                      {/* {item.keytags.map((val, index) => ( */}
+
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
+
+                      {/* ))} */}
+
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+
+
+                      <AccessTimeIcon style={{ fontSize: '14px' }} />
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
+                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
+                    </Box>
+                  </Box>
+                </CardContent>
+
+              </Card>
+
+            </Grid>
+          }
+        })}
+
+      </Grid>
+
+
+
+      {/* Below Average */}
+
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Below Average</Typography>
+      </Box>
+      <Grid container spacing={2} pt={1}>
+
+        {datavideos.map((item, index) => {
+          if (datavideos.length && item.views > 0 && item.views <= 800) {
+            // return <div key={index}>{article.title}</div>
+            return <Grid item xs={12} md={3} sm={3} key={index}>
+
+              <Card elevation={0} className={classes.cardsource}>
+                <CardActionArea>
+
+                  <CardMedia
+                    component="img"
+                    alt={item.title}
+                    height="140"
+                    image={item.image}
+                    title={item.title}
+                    onError={addDefaultSrc}
+                    onClick={() => handleClickOpen(item.URL)}
+                  />
+
+
+                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
+                </CardActionArea>
+                <CardContent>
+
+
+                  <Box display="flex">
+
+                    <Box>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Avatar className={classes.small} alt={item.title} src={item.image} />
+
+                      </Link>
+                    </Box>
+                    <Box pl={1}>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
+
+                          {item.channel_title.slice(0, 20)}
+                        </Typography>
+                      </Link>
+                    </Box>
+
+                  </Box>
+
+
+                  <Box className={classes.content}>
+                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
+                      <Typography variant="h6" component="p">
+                        {item.title}
+                      </Typography>
+                    </Link>
+                  </Box>
+
+                  <Box className={classes.tagcontent}>
+                    <Box className={classes.tagtext}>
+                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
+                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+
+
+                      {/* {item.keytags.map((val, index) => ( */}
+
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
+
+                      {/* ))} */}
+
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+
+
+                      <AccessTimeIcon style={{ fontSize: '14px' }} />
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
+                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
+                    </Box>
+                  </Box>
+                </CardContent>
+
+              </Card>
+
+            </Grid>
+          }
+        })}
+
+      </Grid>
+
+
+
+
+      {/* Normal */}
+      
+      <Box borderBottom={4} borderColor="primary.light" mb={3}>
+        <Typography component='h3' variant="h5" style={{ padding: '10px 0' }}>Normal</Typography>
+      </Box>
+      <Grid container spacing={2} pt={1}>
+
+        {datavideos.map((item, index) => {
+          if (datavideos.length && item.views == 0) {
+            // return <div key={index}>{article.title}</div>
+            return <Grid item xs={12} md={3} sm={3} key={index}>
+
+              <Card elevation={0} className={classes.cardsource}>
+                <CardActionArea>
+
+                  <CardMedia
+                    component="img"
+                    alt={item.title}
+                    height="140"
+                    image={item.image}
+                    title={item.title}
+                    onError={addDefaultSrc}
+                    onClick={() => handleClickOpen(item.URL)}
+                  />
+
+
+                  <Box className={classes.productImageOverlay} onClick={() => handleClickOpen(item.URL)}></Box>
+                </CardActionArea>
+                <CardContent>
+
+
+                  <Box display="flex">
+
+                    <Box>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Avatar className={classes.small} alt={item.title} src={item.image} />
+
+                      </Link>
+                    </Box>
+                    <Box pl={1}>
+                      <Link href={`https://www.youtube.com/channel/${item.channelId}`} underline="none" color="inherit">
+                        <Typography gutterBottom variant="body3" color="textSecondary" component="p">
+
+                          {item.channel_title.slice(0, 20)}
+                        </Typography>
+                      </Link>
+                    </Box>
+
+                  </Box>
+
+
+                  <Box className={classes.content}>
+                    <Link onClick={() => handleClickOpen(item.URL)} underline="none" color="inherit">
+                      <Typography variant="h6" component="p">
+                        {item.title}
+                      </Typography>
+                    </Link>
+                  </Box>
+
+                  <Box className={classes.tagcontent}>
+                    <Box className={classes.tagtext}>
+                      <LocalOfferIcon style={{ color: "lightgray", fontSize: '1rem' }} />
+                      {/* <Chip size="small" label="Basic" style={{margin:"2px"}} /> */}
+
+
+                      {/* {item.keytags.map((val, index) => ( */}
+
+                      <div className={classes.tagcategorytesting} id={item.dataquery} onClick={(e) => { setQuery(item.dataquery); setPageNumber(1) }}>
+                        <Typography color="secondary" component="h5" variant="body2">{stage(item.views)}</Typography>
+                      </div>
+
+                      {/* ))} */}
+
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Box display="flex" justifyContent="center" alignItems="center">
+
+
+                      <AccessTimeIcon style={{ fontSize: '14px' }} />
+                      &nbsp; <Moment fromNow>{moment.utc(item.time_elapsed).local().format('YYYY-MMM-DD h:mm A')}</Moment>&nbsp;
+
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" alignItems="center" style={{ marginTop: '4px' }}>
+                      <VisibilityOutlinedIcon style={{ fontSize: '14px' }} />&nbsp;{item.views}
+
+                    </Box>
+                  </Box>
+                </CardContent>
+
+              </Card>
+
+            </Grid>
+          }
+        })}
+
+      </Grid>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <Grid item xs={12} style={{ marginLeft: '45%' }}>
+       
+        {error && 'Error'}
+        {errormsg}
+        {!hasMore ? <Button size="small" color="primary">
+          No more Records
             </Button> : null}
 
-          {isloading && !loading ? <CircularProgress /> : null}
-        </Grid>
-
-        <ModalPortal open={isOpen} vidurl={videourl} onClose={() => setIsOpen(false)}></ModalPortal>
+        {isloading ? <CircularProgress /> : null}
       </Grid>
+
+      <ModalPortal open={isOpen} vidurl={videourl} onClose={() => setIsOpen(false)}></ModalPortal>
+
     </>
   )
 

@@ -11,10 +11,10 @@ export default function useTrendSearch(query, pageNumber, orderby) {
     const [hasMore, setHasMore] = useState(false)
     
     
-    useEffect(() => {
-        setVideos([])
-        pageNumber=1
-    }, [query,orderby])
+    // useEffect(() => {
+    //     setVideos([])
+    //     pageNumber=1
+    // }, [query,orderby])
 
     React.useEffect(() => {      
         

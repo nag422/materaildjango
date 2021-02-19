@@ -121,11 +121,12 @@ const ProfileIndex = () => {
   
     return (
         <>
+        {open &&
          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity={snakreq.color}>
                     {snakreq.message}
                 </Alert>
-            </Snackbar>
+            </Snackbar>}
         <Grid container spacing={2}>
             <Grid
             item
